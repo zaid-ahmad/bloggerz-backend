@@ -1,13 +1,15 @@
 import express from 'express'
 import mongoose from 'mongoose'
-// import session from 'express-session'
-// import bcrypt from 'bcrypt'
-import asyncHandler from 'express-async-handler'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import passport from 'passport'
 import 'dotenv/config'
 
-const User = './models/user'
-import Blog from './models/blog'
+import indexRouter from './routers/index.js'
+import authRouter from './routers/auth.js'
+import './auth/passport.js'
+import { userRouter } from './routers/user.router.js'
+
 const port = process.env.PORT || 3000
 
 /* CONFIGURE DATABASE - START*/
@@ -23,41 +25,16 @@ async function main() {
 const app = express()
 
 /* MIDDLEWARES */
-app.use(cors())
+app.use(cors({ credentials: true, origin: process.env.FRONT_END_URL }))
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
+app.use(passport.initialize())
+app.use(userRouter)
 
 /* ROUTES */
-app.get('/', (req, res) => {
-  res.send('hellooo')
-})
-
-app.post(
-  '/create',
-  asyncHandler(async (req, res) => {
-    const { title, blog, published } = req.body
-
-    if (title.length < 20) {
-      // 422 - Unprocessable Entity.
-      // This status code indicates that the server
-      // understands the request but cannot process it
-      // due to semantic errors.
-      res.sendStatus(422)
-    } else if (blog.length < 250) {
-      res.sendStatus(422)
-    } else {
-      const newBlog = new Blog({
-        title,
-        blog,
-        timestamp: new Date(),
-        author: 'Zaid', // should be req.user
-        published,
-      })
-      await newBlog.save()
-      res.status(200).json('Blog posted successfully')
-    }
-  })
-)
+app.use('/api', indexRouter)
+app.use('/api', authRouter)
 
 app.listen(port, (err) => {
   if (err) console.log('Error in server setup')
@@ -67,10 +44,11 @@ app.listen(port, (err) => {
 /*
   BLOG WEBSITE
 
-  -> Authentication & Authorization via Google (jwt tokens in cookie headers)
+  ✅ Authentication 
+  -> Authorization and auth via Google (jwt tokens in cookie headers)
 
 
-  -> POST - Create blog post
+  ✅ POST - Create blog post
   -> PUT - Edit blog post
   -> DELETE - Delete blog post
   -> GET - Sort by published / unpublished

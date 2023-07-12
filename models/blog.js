@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
 const BlogSchema = new Schema({
@@ -9,6 +9,4 @@ const BlogSchema = new Schema({
   published: { type: Boolean, required: true },
 })
 
-const Blog = mongoose.model('Blog', BlogSchema)
-
-export default Blog
+export default mongoose.model('Blog', BlogSchema)
