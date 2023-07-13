@@ -1,6 +1,7 @@
 import express from 'express'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
+import 'dotenv/config'
 
 import login from '../auth/login.js'
 
@@ -50,20 +51,14 @@ router.get('/logout', (req, res) => {
   }
 })
 
-router.get(
-  '/protected',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    res.send(200).json({
-      message: 'welcome to the protected route!',
-    })
-  }
-)
+// router.get(
+//   '/protected',
+//   passport.authenticate('jwt', { session: false }),
+//   (req, res) => {
+//     res.status(200).json({
+//       message: 'welcome to the protected route!',
+//     })
+//   }
+// )
 
 export { router as userRouter }
-
-/*
-
-  TEST LOGIN WITH JWT WITH COOKIE
-
-*/

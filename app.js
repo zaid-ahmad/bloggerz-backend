@@ -6,11 +6,8 @@ import passport from 'passport'
 import 'dotenv/config'
 
 import indexRouter from './routers/index.js'
-import authRouter from './routers/auth.js'
 import './auth/passport.js'
 import { userRouter } from './routers/user.router.js'
-
-const port = process.env.PORT || 3000
 
 /* CONFIGURE DATABASE - START*/
 mongoose.set('strictQuery', true)
@@ -32,24 +29,32 @@ app.use(express.urlencoded({ extended: true }))
 app.use(passport.initialize())
 app.use(userRouter)
 
-/* ROUTES */
+// /* ROUTES */
 app.use('/api', indexRouter)
-app.use('/api', authRouter)
+// app.use('/api', authRouter)
+
+const port = process.env.PORT || 3000
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Node Cookie JWT Service',
+  })
+})
 
 app.listen(port, (err) => {
   if (err) console.log('Error in server setup')
-  console.log('Server listening on Port', port)
+  console.log(`Server is up at port: ${port}`)
 })
 
 /*
   BLOG WEBSITE
 
-  ✅ Authentication 
-  -> Authorization and auth via Google (jwt tokens in cookie headers)
+  ✅ Authentication with jwt tokens in cookie headers
+  -> Authorization and auth via Google 
 
 
   ✅ POST - Create blog post
-  -> PUT - Edit blog post
+  ✅ PUT - Edit blog post
   -> DELETE - Delete blog post
   -> GET - Sort by published / unpublished
 */

@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'
+import bcrypt from 'bcrypt'
 
 import User from '../models/user.js'
 
@@ -6,20 +7,27 @@ const login = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body
 
   try {
-    const user = await User.findOne({ username })
+    const userFound = await User.findOne({ username })
 
-    if (!user) {
+    if (!userFound) {
       return res.status(400).json({
         error: 'Incorrect username or password',
       })
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password)
+    const isPasswordMatch = await bcrypt.compare(password, userFound.password)
+    console.log(isPasswordMatch)
 
     if (!isPasswordMatch) {
       return res.status(400).json({
         error: 'Incorrect username or password',
       })
+    }
+
+    console.log(userFound, isPasswordMatch)
+    let user = {
+      username,
+      password,
     }
     res.locals.user = user
     next()

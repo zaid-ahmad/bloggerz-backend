@@ -1,6 +1,7 @@
 import passport from 'passport'
 import passportJWT from 'passport-jwt'
 const JWTStrategy = passportJWT.Strategy
+import 'dotenv/config'
 
 const secret = process.env.JWT_SECRET
 
