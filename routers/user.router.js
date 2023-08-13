@@ -1,9 +1,9 @@
 import express from 'express'
-import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
 import login from '../auth/login.js'
+import User from '../models/user.js'
 
 const router = express.Router()
 
@@ -17,26 +17,24 @@ router.post('/login', login, async (req, res) => {
     user = res.locals.user
   } else {
     res.status(400).json({
-      error: 'user not found',
+      error: 'User not found',
     })
   }
 
+  const userFound = await User.findOne({ username: user.username })
+
   const payload = {
-    username: user.username,
+    name: userFound.name,
+    username: userFound.username,
     expiration: Date.now() + parseInt(expirationtimeInMs),
   }
 
   const token = jwt.sign(JSON.stringify(payload), secret)
 
-  res
-    .cookie('jwt', token, {
-      httpOnly: true,
-      secure: false, //--> SET TO TRUE ON PRODUCTION
-    })
-    .status(200)
-    .json({
-      message: 'You have logged in :D',
-    })
+  res.status(200).json({
+    message: 'You have logged in :D',
+    token: token, // Include the token in the response
+  })
 })
 
 router.get('/logout', (req, res) => {

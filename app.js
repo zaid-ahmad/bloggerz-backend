@@ -17,6 +17,7 @@ main().catch((err) => console.log(err))
 
 async function main() {
   await mongoose.connect(mongoDB)
+  console.log('Connected to database')
 }
 
 const app = express()
@@ -31,30 +32,10 @@ app.use(userRouter)
 
 // /* ROUTES */
 app.use('/api', indexRouter)
-// app.use('/api', authRouter)
 
 const port = process.env.PORT || 3000
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Node Cookie JWT Service',
-  })
-})
 
 app.listen(port, (err) => {
   if (err) console.log('Error in server setup')
   console.log(`Server is up at port: ${port}`)
 })
-
-/*
-  BLOG WEBSITE
-
-  ✅ Authentication with jwt tokens in cookie headers
-  -> Authorization and auth via Google 
-
-
-  ✅ POST - Create blog post
-  ✅ PUT - Edit blog post
-  -> DELETE - Delete blog post
-  -> GET - Sort by published / unpublished
-*/
